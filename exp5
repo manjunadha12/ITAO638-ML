@@ -1,0 +1,36 @@
+import math
+from collections import Counter
+
+# Euclidean distance
+def distance(p1, p2):
+    return math.sqrt(sum((a - b) ** 2 for a, b in zip(p1, p2)))
+
+# KNN algorithm
+def knn(train_X, train_y, test_point, k):
+    distances = []
+
+    for i in range(len(train_X)):
+        d = distance(train_X[i], test_point)
+        distances.append((d, train_y[i]))
+
+    distances.sort(key=lambda x: x[0])
+    k_nearest = distances[:k]
+
+    labels = [label for _, label in k_nearest]
+    return Counter(labels).most_common(1)[0][0]
+
+
+# Training data
+X_train = [[2,4], [4,6], [4,4], [6,2], [6,4]]
+y_train = ['A', 'A', 'B', 'B', 'B']
+
+# Test sample
+test = [5, 4]
+k = 3
+
+# Prediction
+result = knn(X_train, y_train, test, k)
+print("Predicted class:", result)
+
+output:
+Predicted class: B
