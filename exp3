@@ -1,0 +1,44 @@
+import math, pandas as pd
+
+def entropy(y):
+    from collections import Counter
+    return -sum((c/len(y))*math.log2(c/len(y)) for c in Counter(y).values())
+
+def id3(data, features):
+    y = data.iloc[:, -1]
+    if len(y.unique()) == 1: return y.iloc[0]
+    if not features: return y.mode()[0]
+
+    gains = {f: entropy(y) - sum(
+        len(d)/len(data)*entropy(d.iloc[:, -1])
+        for _, d in data.groupby(f)) for f in features}
+
+    best = max(gains, key=gains.get)
+    tree = {best: {}}
+
+    for v, d in data.groupby(best):
+        tree[best][v] = id3(d, [f for f in features if f != best])
+    return tree
+
+def classify(tree, sample):
+    if not isinstance(tree, dict): return tree
+    key = next(iter(tree))
+    return classify(tree[key][sample[key]], sample)
+
+
+# Dataset
+data = pd.DataFrame([
+ ['Sunny','High','No'], ['Sunny','High','No'],
+ ['Overcast','High','Yes'], ['Rain','Normal','Yes'],
+ ['Rain','Normal','Yes'], ['Rain','High','No']
+], columns=['Outlook','Humidity','Play'])
+
+tree = id3(data, ['Outlook','Humidity'])
+print(tree)
+
+print(classify(tree, {'Outlook':'Sunny','Humidity':'Normal'}))
+
+
+output:
+{'Outlook': {'Sunny': 'No', 'Overcast': 'Yes', 'Rain': 'Yes'}}
+Yes
