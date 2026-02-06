@@ -1,1 +1,21 @@
+def find_s(training_data):
+    hypothesis = ['0'] * (len(training_data[0]) - 1)
+    for example in training_data:
+        if example[-1] == 'Yes':  # Consider only positive examples
+            for i in range(len(hypothesis)):
+                if hypothesis[i] == '0':
+                    hypothesis[i] = example[i]
+                elif hypothesis[i] != example[i]:
+                    hypothesis[i] = '?'
+    return hypothesis
+data = [
+    ['Sunny', 'Warm', 'Normal', 'Strong', 'Yes'],
+    ['Sunny', 'Warm', 'High', 'Strong', 'Yes'],
+    ['Rainy', 'Cold', 'High', 'Weak', 'No'],
+    ['Sunny', 'Warm', 'High', 'Weak', 'Yes']
+]
+final_hypothesis = find_s(data)
+print("Most Specific Hypothesis:", final_hypothesis)
 
+output:
+Most Specific Hypothesis: ['Sunny', 'Warm', '?', '?']
